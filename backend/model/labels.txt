@@ -1,0 +1,10 @@
+0 Bangus
+1 Dalagang bukid
+2 Budboron
+3 Pakol
+4 Tulay
+5 Bilong-bilong
+6 Barilis
+7 Tulingan
+8 Hiwas
+9 Tilapia
