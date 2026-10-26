@@ -17,6 +17,8 @@ The app runs in **Expo Go 58.0.5** (Expo SDK 58). Expo Go cannot execute a `.tfl
 
 The scanner tab hides the bottom navigation bar so the camera and preview use the full screen.
 
+On launch, a branded screen shows the OFishx logo and a spinner while the app preloads its image assets, then fades into Home. A 4-second safety timeout prevents a slow preload from blocking startup.
+
 ## Project layout
 
 ```text
