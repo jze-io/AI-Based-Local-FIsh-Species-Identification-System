@@ -83,7 +83,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <StatusBar style={hidden ? "dark" : "light"} />
       <View style={styles.root}>
         <NavigationContainer theme={navigationTheme}>
           <AppNavigator />
@@ -108,6 +108,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   overlay: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.primaryDark,
   },
 });

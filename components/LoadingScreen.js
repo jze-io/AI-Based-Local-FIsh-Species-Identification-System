@@ -123,7 +123,7 @@ export default function LoadingScreen({ onLayout }) {
         pointerEvents="none"
         style={[StyleSheet.absoluteFill, { transform: [{ translateX: driftX }] }]}
       >
-        <FishPattern color={colors.primary} strength={0.045} />
+        <FishPattern color={colors.white} strength={0.07} />
       </Animated.View>
 
       <Animated.View style={[styles.brand, brandStyle]}>
@@ -146,10 +146,10 @@ export default function LoadingScreen({ onLayout }) {
             style={{ opacity: 0.75 }}
           />
           <Ionicons
-            color={colors.ocean}
+            color="#9EE9E2"
             name="fish"
             size={18}
-            style={{ opacity: 0.5, transform: [{ scaleX: -1 }] }}
+            style={{ opacity: 0.6, transform: [{ scaleX: -1 }] }}
           />
           <Ionicons
             color={colors.turquoise}
@@ -161,7 +161,7 @@ export default function LoadingScreen({ onLayout }) {
       </Animated.View>
 
       <Animated.View style={[styles.footer, { opacity: intro }]}>
-        <ActivityIndicator color={colors.ocean} size="small" />
+        <ActivityIndicator color={colors.turquoise} size="small" />
         <Text style={styles.status}>Preparing the scanner…</Text>
       </Animated.View>
     </View>
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.background,
+    backgroundColor: colors.primaryDark,
     paddingHorizontal: 32,
   },
   brand: {
@@ -186,23 +186,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 70,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.white,
   },
   mark: {
     width: 94,
     height: 76,
   },
   wordmark: {
-    color: colors.ink,
+    color: colors.white,
     fontSize: 30,
     fontWeight: "800",
     letterSpacing: -0.6,
   },
   tagline: {
     ...typography.caption,
-    color: colors.mutedLight,
+    color: "#A9CBCB",
     letterSpacing: 0.2,
   },
   school: {
@@ -218,7 +216,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   status: {
-    color: colors.mutedLight,
+    color: "#8FB5B5",
     fontSize: 12,
     letterSpacing: 0.2,
   },
