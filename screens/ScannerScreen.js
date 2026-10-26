@@ -16,6 +16,7 @@ import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import Screen, {
   ErrorState,
   InlineNotice,
@@ -127,6 +128,7 @@ export default function ScannerScreen({ navigation, route }) {
         fileName: asset.fileName || null,
       });
       setCameraReady(false);
+      Haptics.selectionAsync().catch(() => {});
     } catch (error) {
       Alert.alert(
         "Could not use that photo",
@@ -165,6 +167,7 @@ export default function ScannerScreen({ navigation, route }) {
         fileName: null,
       });
       setCameraReady(false);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     } catch {
       Alert.alert(
         "Could not capture the photo",
@@ -185,6 +188,9 @@ export default function ScannerScreen({ navigation, route }) {
       const result = await classifyFish(selected.uri, {
         mimeType: selected.mimeType,
       });
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success,
+      ).catch(() => {});
       navigation.navigate("Results", {
         imageUri: selected.uri,
         mimeType: selected.mimeType,
@@ -192,6 +198,9 @@ export default function ScannerScreen({ navigation, route }) {
       });
     } catch (error) {
       setClassifyError(error);
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Error,
+      ).catch(() => {});
     } finally {
       classifyLock.current = false;
       setClassifying(false);

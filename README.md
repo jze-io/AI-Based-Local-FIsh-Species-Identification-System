@@ -11,13 +11,15 @@ The app runs in **Expo Go 58.0.5** (Expo SDK 58). Expo Go cannot execute a `.tfl
 | Home | Welcome, how it works, two recent scans, shortcuts |
 | Scanner | Camera, gallery picker, photo preview, Identify action |
 | Results | Photo, species, confidence, top-five scores, Save, field-guide link |
-| Fish Information | One detail page for each of the ten model classes |
-| Scan History | Reopen saved scans, delete one, clear all, empty/error states |
+| Fish Information | Searchable guide with one detail page per model class |
+| Scan History | Grouped by day; reopen, delete, clear all, empty/error states |
 | About | App and model details, live server check, privacy, limits |
 
 The scanner tab hides the bottom navigation bar so the camera and preview use the full screen.
 
 On launch, a dark ocean-blue screen shows the OFishx logo in a white badge and a spinner for about 2.5 seconds while the app preloads its image assets, then fades into Home. A 4-second safety timeout prevents a slow preload from blocking startup. The logo eases in and breathes gently, the fish pattern drifts, and these loops stop when the phone's Reduce Motion setting is on. Result confidence bars animate to their score. The native splash uses the same dark `#083B47` background.
+
+Navigation uses a short fade between tabs, the active tab gets a soft teal pill, and tab changes plus scan/save actions give light haptic feedback. The field guide can be searched by local or English name, and scan history is grouped by day.
 
 Branding keeps the logo's original orange/navy/gold colours, reused in `icon.png`, the adaptive Android icons, `splash-icon.png`, and `favicon.png`. A faint school-of-fish motif (`components/FishPattern.js`) appears on the Home, About, and fish-detail hero cards.
 

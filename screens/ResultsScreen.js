@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
+  Animated,
+  Easing,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import Screen, {
   ErrorState,
   InlineNotice,
@@ -48,6 +50,8 @@ export default function ResultsScreen({ navigation, route }) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [imageFailed, setImageFailed] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageOpacity] = useState(() => new Animated.Value(0));
   const saveLock = useRef(false);
 
   useEffect(() => {
@@ -81,6 +85,13 @@ export default function ResultsScreen({ navigation, route }) {
   const result = activeScan ? scanToResult(activeScan) : incomingResult;
   const imageUri = activeScan?.imageUri || incomingImageUri;
   const isSaved = Boolean(activeScan);
+
+  useEffect(() => {
+    if (!imageUri) return;
+    setImageFailed(false);
+    setImageLoading(true);
+    imageOpacity.setValue(0);
+  }, [imageUri, imageOpacity]);
 
   if (routeScanId && loading) {
     return (
@@ -155,8 +166,14 @@ export default function ResultsScreen({ navigation, route }) {
         result,
       });
       setSavedScan(scan);
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success,
+      ).catch(() => {});
     } catch (error) {
       setSaveError(error.message);
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Error,
+      ).catch(() => {});
     } finally {
       saveLock.current = false;
       setSaving(false);
@@ -204,13 +221,32 @@ export default function ResultsScreen({ navigation, route }) {
             </Text>
           </View>
         ) : (
-          <Image
-            source={{ uri: imageUri }}
-            accessibilityLabel={`Photo identified as ${top.label}`}
-            resizeMode="contain"
-            onError={() => setImageFailed(true)}
-            style={styles.image}
-          />
+          <>
+            <Animated.Image
+              source={{ uri: imageUri }}
+              accessibilityLabel={`Photo identified as ${top.label}`}
+              resizeMode="contain"
+              onError={() => {
+                setImageFailed(true);
+                setImageLoading(false);
+              }}
+              onLoad={() => {
+                setImageLoading(false);
+                Animated.timing(imageOpacity, {
+                  toValue: 1,
+                  duration: 260,
+                  easing: Easing.out(Easing.cubic),
+                  useNativeDriver: true,
+                }).start();
+              }}
+              style={[styles.image, { opacity: imageOpacity }]}
+            />
+            {imageLoading ? (
+              <View pointerEvents="none" style={styles.imageLoading}>
+                <ActivityIndicator color={colors.white} size="small" />
+              </View>
+            ) : null}
+          </>
         )}
         {isSaved ? (
           <View style={styles.savedBadge}>
@@ -452,6 +488,12 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+  },
+  imageLoading: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primaryDark,
   },
   imageFallback: {
     flex: 1,

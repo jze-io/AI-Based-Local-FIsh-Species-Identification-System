@@ -24,6 +24,7 @@ export default function Screen({
       {scroll ? (
         <ScrollView
           contentContainerStyle={[layout.content, contentContainerStyle]}
+          keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           refreshControl={refreshControl}
           showsVerticalScrollIndicator={false}

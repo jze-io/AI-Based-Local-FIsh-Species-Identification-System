@@ -71,6 +71,7 @@ export default function AppButton({
           backgroundColor: palette.background,
           borderColor: palette.border,
           opacity: inactive ? 0.5 : pressed ? 0.82 : 1,
+          transform: [{ scale: pressed && !inactive ? 0.985 : 1 }],
         },
         style,
       ]}

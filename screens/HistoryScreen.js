@@ -14,6 +14,37 @@ import HistoryCard from "../components/HistoryCard";
 import { clearScans, deleteScan, loadScans } from "../services/scanHistory";
 import { colors, layout, radius, typography } from "../constants/theme";
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const GROUP_ORDER = ["Today", "Yesterday", "Earlier this week", "Older"];
+
+function groupScans(scans) {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const today = startOfToday.getTime();
+  const buckets = new Map();
+
+  scans.forEach((scan) => {
+    const created = new Date(scan.createdAt).getTime();
+    const age = today - created;
+    const title =
+      created >= today
+        ? "Today"
+        : age < DAY_MS
+          ? "Yesterday"
+          : age < 7 * DAY_MS
+            ? "Earlier this week"
+            : "Older";
+
+    if (!buckets.has(title)) buckets.set(title, []);
+    buckets.get(title).push(scan);
+  });
+
+  return GROUP_ORDER.filter((title) => buckets.has(title)).map((title) => ({
+    title,
+    scans: buckets.get(title),
+  }));
+}
+
 export default function HistoryScreen({ navigation }) {
   const [scans, setScans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -208,17 +239,29 @@ export default function HistoryScreen({ navigation }) {
             </View>
           </View>
 
-          <View style={{ gap: 10 }}>
-            {scans.map((scan) => (
-              <HistoryCard
-                key={scan.id}
-                scan={scan}
-                deleting={deletingId === scan.id}
-                onPress={() =>
-                  navigation.navigate("Results", { scanId: scan.id })
-                }
-                onDelete={() => confirmDelete(scan)}
-              />
+          <View style={{ gap: 18 }}>
+            {groupScans(scans).map((group) => (
+              <View key={group.title} style={{ gap: 8 }}>
+                <View style={styles.groupHeader}>
+                  <Text accessibilityRole="header" style={styles.groupTitle}>
+                    {group.title}
+                  </Text>
+                  <Text style={styles.groupCount}>{group.scans.length}</Text>
+                </View>
+                <View style={{ gap: 10 }}>
+                  {group.scans.map((scan) => (
+                    <HistoryCard
+                      key={scan.id}
+                      scan={scan}
+                      deleting={deletingId === scan.id}
+                      onPress={() =>
+                        navigation.navigate("Results", { scanId: scan.id })
+                      }
+                      onDelete={() => confirmDelete(scan)}
+                    />
+                  ))}
+                </View>
+              </View>
             ))}
           </View>
 
@@ -277,6 +320,30 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: 11,
     backgroundColor: colors.surface,
+  },
+  groupHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 4,
+  },
+  groupTitle: {
+    color: colors.ink,
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0.1,
+  },
+  groupCount: {
+    minWidth: 22,
+    textAlign: "center",
+    color: colors.ocean,
+    fontSize: 10,
+    fontWeight: "800",
+    backgroundColor: colors.surfaceStrong,
+    borderRadius: radius.pill,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    overflow: "hidden",
   },
   summaryIcon: {
     width: 40,

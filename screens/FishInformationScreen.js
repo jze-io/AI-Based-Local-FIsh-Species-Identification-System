@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Screen, {
   InlineNotice,
@@ -58,6 +58,22 @@ export default function FishInformationScreen({ navigation, route }) {
   const [selected, setSelected] = useState(() =>
     MODEL_LABELS.includes(requestedSpecies) ? requestedSpecies : null,
   );
+  const [query, setQuery] = useState("");
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredFish = useMemo(() => {
+    if (!normalizedQuery) return FISH_INFORMATION_LIST;
+    return FISH_INFORMATION_LIST.filter((info) => {
+      const haystack = [
+        info.label,
+        info.englishName,
+        ...(info.aliases || []),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(normalizedQuery);
+    });
+  }, [normalizedQuery]);
 
   useEffect(() => {
     if (MODEL_LABELS.includes(requestedSpecies)) {
@@ -197,53 +213,109 @@ export default function FishInformationScreen({ navigation, route }) {
 
       <InlineNotice>{FISH_INFO_DISCLAIMER}</InlineNotice>
 
-      <SectionTitle title={`All ${FISH_INFORMATION_LIST.length} model classes`} />
+      <View style={styles.search}>
+        <Ionicons name="search" size={18} color={colors.mutedLight} />
+        <TextInput
+          accessibilityLabel="Search fish by local or English name"
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={setQuery}
+          placeholder="Search local or English name"
+          placeholderTextColor={colors.mutedLight}
+          returnKeyType="search"
+          style={styles.searchInput}
+          value={query}
+        />
+        {query.length ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+            hitSlop={10}
+            onPress={() => setQuery("")}
+          >
+            <Ionicons
+              name="close-circle"
+              size={18}
+              color={colors.mutedLight}
+            />
+          </Pressable>
+        ) : null}
+      </View>
 
-      <View style={{ gap: 10 }}>
-        {FISH_INFORMATION_LIST.map((info, index) => {
-          const tone = statusColor(info.scientificStatus);
-          return (
-            <Pressable
-              key={info.label}
-              accessibilityRole="button"
-              accessibilityLabel={`Open information about ${info.label}`}
-              onPress={() => setSelected(info.label)}
-              style={({ pressed }) => [
-                styles.listCard,
-                { opacity: pressed ? 0.75 : 1 },
-              ]}
-            >
-              <View style={styles.listNumber}>
-                <Text style={styles.listNumberText}>
-                  {String(index + 1).padStart(2, "0")}
-                </Text>
-              </View>
-              <View style={styles.listText}>
-                <Text style={styles.listTitle}>{info.label}</Text>
-                <Text style={styles.listEnglish}>{info.englishName}</Text>
-                <View
-                  style={[
-                    styles.listBadge,
-                    {
-                      backgroundColor: tone.background,
-                      borderColor: tone.border,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.listBadgeText, { color: tone.text }]}>
-                    {statusLabel(info.scientificStatus)}
+      <SectionTitle
+        title={
+          normalizedQuery
+            ? `${filteredFish.length} ${filteredFish.length === 1 ? "match" : "matches"}`
+            : `All ${FISH_INFORMATION_LIST.length} model classes`
+        }
+      />
+
+      {filteredFish.length === 0 ? (
+        <View style={styles.noResults}>
+          <View style={styles.noResultsIcon}>
+            <Ionicons name="search-outline" size={22} color={colors.primary} />
+          </View>
+          <Text style={typography.heading}>No matching fish</Text>
+          <Text style={[typography.caption, styles.noResultsText]}>
+            Try a local name such as “Bangus” or an English name. The guide only
+            covers the ten classes the model was trained on.
+          </Text>
+          <AppButton
+            title="Clear search"
+            icon="close"
+            variant="secondary"
+            compact
+            onPress={() => setQuery("")}
+          />
+        </View>
+      ) : (
+        <View style={{ gap: 10 }}>
+          {filteredFish.map((info) => {
+            const index = FISH_INFORMATION_LIST.indexOf(info);
+            const tone = statusColor(info.scientificStatus);
+            return (
+              <Pressable
+                key={info.label}
+                accessibilityRole="button"
+                accessibilityLabel={`Open information about ${info.label}`}
+                onPress={() => setSelected(info.label)}
+                style={({ pressed }) => [
+                  styles.listCard,
+                  { opacity: pressed ? 0.75 : 1 },
+                ]}
+              >
+                <View style={styles.listNumber}>
+                  <Text style={styles.listNumberText}>
+                    {String(index + 1).padStart(2, "0")}
                   </Text>
                 </View>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={18}
-                color={colors.mutedLight}
-              />
-            </Pressable>
-          );
-        })}
-      </View>
+                <View style={styles.listText}>
+                  <Text style={styles.listTitle}>{info.label}</Text>
+                  <Text style={styles.listEnglish}>{info.englishName}</Text>
+                  <View
+                    style={[
+                      styles.listBadge,
+                      {
+                        backgroundColor: tone.background,
+                        borderColor: tone.border,
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.listBadgeText, { color: tone.text }]}>
+                      {statusLabel(info.scientificStatus)}
+                    </Text>
+                  </View>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={18}
+                  color={colors.mutedLight}
+                />
+              </Pressable>
+            );
+          })}
+        </View>
+      )}
 
       <View style={styles.guideNote}>
         <Ionicons name="school-outline" size={18} color={colors.ocean} />
@@ -265,6 +337,41 @@ export default function FishInformationScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+  search: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 9,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: 13,
+    minHeight: 48,
+  },
+  searchInput: {
+    flex: 1,
+    color: colors.ink,
+    fontSize: 14,
+    paddingVertical: 10,
+  },
+  noResults: {
+    ...layout.card,
+    alignItems: "center",
+    gap: 9,
+    paddingVertical: 24,
+  },
+  noResultsIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surfaceStrong,
+  },
+  noResultsText: {
+    textAlign: "center",
+    paddingHorizontal: 8,
+  },
   backRow: {
     flexDirection: "row",
     alignItems: "center",

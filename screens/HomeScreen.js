@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import Screen, {
@@ -194,13 +194,22 @@ export default function HomeScreen({ navigation }) {
 
       {loading ? (
         <View style={styles.loadingRow}>
-          <Ionicons name="ellipsis-horizontal" size={18} color={colors.muted} />
+          <ActivityIndicator size="small" color={colors.primary} />
           <Text style={typography.caption}>Loading saved scans…</Text>
         </View>
       ) : historyError ? (
-        <InlineNotice icon="alert-circle-outline">
-          {historyError} Open History to clear damaged data.
-        </InlineNotice>
+        <View style={{ gap: 10 }}>
+          <InlineNotice icon="alert-circle-outline">
+            {historyError} Open History to clear damaged data.
+          </InlineNotice>
+          <AppButton
+            title="Try loading scans again"
+            icon="refresh-outline"
+            variant="secondary"
+            compact
+            onPress={refreshHistory}
+          />
+        </View>
       ) : scans.length ? (
         <View style={{ gap: 10 }}>
           {scans.slice(0, 2).map((scan) => (
@@ -353,17 +362,17 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 9,
-    padding: 12,
+    gap: 10,
+    padding: 13,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
     backgroundColor: colors.white,
   },
   quickIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.surfaceStrong,
@@ -374,12 +383,13 @@ const styles = StyleSheet.create({
   },
   quickTitle: {
     color: colors.ink,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "700",
   },
   quickBody: {
     color: colors.muted,
-    fontSize: 10,
+    fontSize: 11,
+    lineHeight: 15,
   },
   stepsCard: {
     backgroundColor: colors.surface,

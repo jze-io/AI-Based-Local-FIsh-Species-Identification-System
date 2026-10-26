@@ -1,6 +1,7 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "../screens/HomeScreen";
@@ -29,19 +30,27 @@ const TAB_LABELS = {
 function tabIcon(routeName, focused, color, size) {
   const icons = TAB_ICONS[routeName] || ["ellipse", "ellipse-outline"];
   return (
-    <Ionicons
-      name={focused ? icons[0] : icons[1]}
-      size={size}
-      color={color}
-    />
+    <View style={[styles.tabIcon, focused && styles.tabIconActive]}>
+      <Ionicons
+        name={focused ? icons[0] : icons[1]}
+        size={focused ? size - 1 : size}
+        color={color}
+      />
+    </View>
   );
+}
+
+function tabPressHaptic() {
+  Haptics.selectionAsync().catch(() => {});
 }
 
 function MainTabs() {
   return (
     <Tab.Navigator
+      screenListeners={{ tabPress: tabPressHaptic }}
       screenOptions={({ route }) => ({
         headerShown: false,
+        animation: "fade",
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.mutedLight,
         tabBarHideOnKeyboard: true,
@@ -99,6 +108,16 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
     borderTopWidth: 1,
     paddingTop: 6,
+  },
+  tabIcon: {
+    width: 46,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tabIconActive: {
+    backgroundColor: colors.turquoiseSoft,
   },
   hiddenTabBar: {
     display: "none",
