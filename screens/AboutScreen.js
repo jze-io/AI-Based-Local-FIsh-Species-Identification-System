@@ -83,7 +83,9 @@ export default function AboutScreen({ navigation }) {
         <View style={styles.heroRing} />
         <FishPattern color={colors.white} strength={0.1} />
         <View style={styles.heroContent}>
-          <BrandLogo size={52} variant="white" />
+          <View style={styles.logoBadge}>
+            <BrandLogo size={42} />
+          </View>
           <View style={{ flex: 1, gap: 3 }}>
             <Text style={styles.heroTitle}>OFishx</Text>
             <Text style={styles.heroSubtitle}>
@@ -291,6 +293,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 11,
     zIndex: 2,
+  },
+  logoBadge: {
+    width: 60,
+    height: 60,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.white,
   },
   heroTitle: {
     color: colors.white,

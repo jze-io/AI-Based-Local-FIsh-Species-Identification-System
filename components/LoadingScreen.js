@@ -22,7 +22,7 @@ export default function LoadingScreen({ onLayout }) {
           <Image
             accessibilityLabel="OFishx logo"
             resizeMode="contain"
-            source={require("../assets/ofishx-logo-ocean.png")}
+            source={require("../assets/ofishx-logo.png")}
             style={styles.mark}
           />
         </View>

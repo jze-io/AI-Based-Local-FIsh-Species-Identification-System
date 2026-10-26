@@ -19,6 +19,8 @@ The scanner tab hides the bottom navigation bar so the camera and preview use th
 
 On launch, a branded screen shows the OFishx logo and a spinner while the app preloads its image assets, then fades into Home. A 4-second safety timeout prevents a slow preload from blocking startup.
 
+Branding keeps the logo's original orange/navy/gold colours, reused in `icon.png`, the adaptive Android icons, `splash-icon.png`, and `favicon.png`. A faint school-of-fish motif (`components/FishPattern.js`) appears on the Home, About, and fish-detail hero cards.
+
 ## Project layout
 
 ```text

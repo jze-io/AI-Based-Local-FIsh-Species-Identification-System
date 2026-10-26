@@ -2,26 +2,25 @@ import React from "react";
 import { Image } from "react-native";
 
 const SOURCES = {
-  ocean: require("../assets/ofishx-logo-ocean.png"),
+  original: require("../assets/ofishx-logo.png"),
   teal: require("../assets/ofishx-mark-teal.png"),
   white: require("../assets/ofishx-mark-white.png"),
   deep: require("../assets/ofishx-mark-deep.png"),
 };
 
 /**
- * Trimmed OFishx mark. The original logo asset is preserved in the project as
- * assets/ofishx-logo.png; this component uses recoloured copies so the mark
- * fits the app's teal/ocean palette. The "ocean" variant keeps the logo's
- * multi-tone fish detail; the flat variants are for small or dark placements.
+ * OFishx mark. The default variant is the original orange/navy/gold logo;
+ * the flat teal/white/deep variants exist for small or dark placements where
+ * the full logo would lose contrast.
  */
 export default function BrandLogo({
   size = 42,
-  variant = "ocean",
+  variant = "original",
   accessibilityLabel = "OFishx logo",
 }) {
   return (
     <Image
-      source={SOURCES[variant] || SOURCES.ocean}
+      source={SOURCES[variant] || SOURCES.original}
       accessibilityLabel={accessibilityLabel}
       resizeMode="contain"
       style={{ width: size * 1.237, height: size }}
