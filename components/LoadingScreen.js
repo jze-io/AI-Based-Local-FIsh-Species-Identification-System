@@ -1,5 +1,14 @@
-import React from "react";
-import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  AccessibilityInfo,
+  ActivityIndicator,
+  Animated,
+  Easing,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FishPattern from "./FishPattern";
 import { colors, typography } from "../constants/theme";
@@ -7,25 +16,125 @@ import { colors, typography } from "../constants/theme";
 /**
  * Branded launch screen. Shown once while the app preloads its image assets,
  * then fades away to reveal the navigator underneath.
+ *
+ * Motion: the brand block eases in, the logo breathes gently, and the fish
+ * pattern drifts sideways. All loops are skipped when the OS asks for
+ * reduced motion.
  */
 export default function LoadingScreen({ onLayout }) {
+  const [intro] = useState(() => new Animated.Value(0));
+  const [breathe] = useState(() => new Animated.Value(0));
+  const [drift] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    let mounted = true;
+
+    Animated.timing(intro, {
+      toValue: 1,
+      duration: 420,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+
+    let breatheLoop = null;
+    let driftLoop = null;
+
+    AccessibilityInfo.isReduceMotionEnabled()
+      .catch(() => false)
+      .then((reduceMotion) => {
+        if (!mounted || reduceMotion) {
+          return;
+        }
+
+        breatheLoop = Animated.loop(
+          Animated.sequence([
+            Animated.timing(breathe, {
+              toValue: 1,
+              duration: 1700,
+              easing: Easing.inOut(Easing.quad),
+              useNativeDriver: true,
+            }),
+            Animated.timing(breathe, {
+              toValue: 0,
+              duration: 1700,
+              easing: Easing.inOut(Easing.quad),
+              useNativeDriver: true,
+            }),
+          ]),
+        );
+
+        driftLoop = Animated.loop(
+          Animated.sequence([
+            Animated.timing(drift, {
+              toValue: 1,
+              duration: 3600,
+              easing: Easing.inOut(Easing.sin),
+              useNativeDriver: true,
+            }),
+            Animated.timing(drift, {
+              toValue: 0,
+              duration: 3600,
+              easing: Easing.inOut(Easing.sin),
+              useNativeDriver: true,
+            }),
+          ]),
+        );
+
+        breatheLoop.start();
+        driftLoop.start();
+      });
+
+    return () => {
+      mounted = false;
+      if (breatheLoop) breatheLoop.stop();
+      if (driftLoop) driftLoop.stop();
+    };
+  }, [intro, breathe, drift]);
+
+  const brandStyle = {
+    opacity: intro,
+    transform: [
+      {
+        translateY: intro.interpolate({
+          inputRange: [0, 1],
+          outputRange: [12, 0],
+        }),
+      },
+    ],
+  };
+
+  const logoScale = breathe.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.045],
+  });
+
+  const driftX = drift.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-7, 7],
+  });
+
   return (
     <View
       accessibilityLabel="OFishx is starting"
       onLayout={onLayout}
       style={styles.container}
     >
-      <FishPattern color={colors.primary} strength={0.045} />
+      <Animated.View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { transform: [{ translateX: driftX }] }]}
+      >
+        <FishPattern color={colors.primary} strength={0.045} />
+      </Animated.View>
 
-      <View style={styles.brand}>
-        <View style={styles.markWrap}>
+      <Animated.View style={[styles.brand, brandStyle]}>
+        <Animated.View style={[styles.markWrap, { transform: [{ scale: logoScale }] }]}>
           <Image
             accessibilityLabel="OFishx logo"
             resizeMode="contain"
             source={require("../assets/ofishx-logo.png")}
             style={styles.mark}
           />
-        </View>
+        </Animated.View>
         <Text style={styles.wordmark}>OFishx</Text>
         <Text style={styles.tagline}>Philippine fish identification</Text>
 
@@ -49,12 +158,12 @@ export default function LoadingScreen({ onLayout }) {
             style={{ opacity: 0.55 }}
           />
         </View>
-      </View>
+      </Animated.View>
 
-      <View style={styles.footer}>
+      <Animated.View style={[styles.footer, { opacity: intro }]}>
         <ActivityIndicator color={colors.ocean} size="small" />
         <Text style={styles.status}>Preparing the scanner…</Text>
-      </View>
+      </Animated.View>
     </View>
   );
 }

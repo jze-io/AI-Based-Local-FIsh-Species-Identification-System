@@ -1,5 +1,5 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import { LOW_CONFIDENCE_THRESHOLD } from "../constants/config";
 import { colors, radius } from "../constants/theme";
 import { formatPercent } from "../utils/format";
@@ -11,6 +11,7 @@ export default function ConfidenceBar({
   tone,
 }) {
   const numeric = Math.max(0, Math.min(1, Number(value) || 0));
+  const target = Math.max(0.02, numeric);
   const background =
     tone ||
     (numeric >= 0.85
@@ -19,14 +20,30 @@ export default function ConfidenceBar({
         ? colors.ocean
         : colors.turquoise);
 
+  const [progress] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    Animated.timing(progress, {
+      toValue: target,
+      duration: 520,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [progress, target]);
+
+  const width = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0%", "100%"],
+  });
+
   return (
     <View style={styles.wrap}>
       <View style={[styles.track, { height }]}>
-        <View
+        <Animated.View
           style={[
             styles.fill,
             {
-              width: `${Math.max(2, numeric * 100)}%`,
+              width,
               height,
               backgroundColor: background,
             },

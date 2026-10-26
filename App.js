@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Animated, StyleSheet, View } from "react-native";
 import { Asset } from "expo-asset";
 import * as SplashScreen from "expo-splash-screen";
@@ -31,7 +31,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 export default function App() {
   const [ready, setReady] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const fade = useRef(new Animated.Value(1)).current;
+  const [fade] = useState(() => new Animated.Value(1));
 
   const handleLayout = useCallback(() => {
     SplashScreen.hideAsync().catch(() => {});
