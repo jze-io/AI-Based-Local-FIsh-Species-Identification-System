@@ -7,6 +7,7 @@ import Screen, {
   SectionTitle,
 } from "../components/Screen";
 import AppButton from "../components/AppButton";
+import FishPattern from "../components/FishPattern";
 import { MODEL_LABELS } from "../constants/labels";
 import {
   FISH_INFO_DISCLAIMER,
@@ -86,6 +87,7 @@ export default function FishInformationScreen({ navigation, route }) {
 
         <View style={styles.hero}>
           <View style={styles.heroRing} />
+          <FishPattern color={colors.white} strength={0.1} />
           <View style={styles.heroContent}>
             <Text style={styles.heroEyebrow}>
               MODEL CLASS {String(classNumber).padStart(2, "0")} OF{" "}

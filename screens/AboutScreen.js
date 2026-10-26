@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Screen, { PageHeader, SectionTitle } from "../components/Screen";
 import BrandLogo from "../components/BrandLogo";
 import AppButton from "../components/AppButton";
+import FishPattern from "../components/FishPattern";
 import { API_BASE_URL } from "../constants/config";
 import { MODEL_LABELS } from "../constants/labels";
 import { checkBackend } from "../services/fishClassifier";
@@ -80,6 +81,7 @@ export default function AboutScreen({ navigation }) {
 
       <View style={styles.hero}>
         <View style={styles.heroRing} />
+        <FishPattern color={colors.white} strength={0.1} />
         <View style={styles.heroContent}>
           <BrandLogo size={52} variant="white" />
           <View style={{ flex: 1, gap: 3 }}>

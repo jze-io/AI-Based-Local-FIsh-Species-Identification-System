@@ -10,6 +10,7 @@ import Screen, {
 } from "../components/Screen";
 import BrandLogo from "../components/BrandLogo";
 import AppButton from "../components/AppButton";
+import FishPattern from "../components/FishPattern";
 import HistoryCard from "../components/HistoryCard";
 import { loadScans } from "../services/scanHistory";
 import { colors, radius, typography } from "../constants/theme";
@@ -88,6 +89,7 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.hero}>
         <View style={styles.ringLarge} />
         <View style={styles.ringSmall} />
+        <FishPattern color={colors.white} strength={0.09} />
         <View style={styles.heroContent}>
           <Text style={styles.heroEyebrow}>PHILIPPINE FISH IDENTIFIER</Text>
           <Text style={styles.heroTitle}>Know your catch.</Text>

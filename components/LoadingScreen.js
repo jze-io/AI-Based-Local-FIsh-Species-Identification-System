@@ -1,5 +1,7 @@
 import React from "react";
 import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import FishPattern from "./FishPattern";
 import { colors, typography } from "../constants/theme";
 
 /**
@@ -13,17 +15,40 @@ export default function LoadingScreen({ onLayout }) {
       onLayout={onLayout}
       style={styles.container}
     >
+      <FishPattern color={colors.primary} strength={0.045} />
+
       <View style={styles.brand}>
         <View style={styles.markWrap}>
           <Image
             accessibilityLabel="OFishx logo"
             resizeMode="contain"
-            source={require("../assets/ofishx-mark-teal.png")}
+            source={require("../assets/ofishx-logo-ocean.png")}
             style={styles.mark}
           />
         </View>
         <Text style={styles.wordmark}>OFishx</Text>
         <Text style={styles.tagline}>Philippine fish identification</Text>
+
+        <View style={styles.school} accessibilityElementsHidden>
+          <Ionicons
+            color={colors.turquoise}
+            name="fish"
+            size={12}
+            style={{ opacity: 0.75 }}
+          />
+          <Ionicons
+            color={colors.ocean}
+            name="fish"
+            size={18}
+            style={{ opacity: 0.5, transform: [{ scaleX: -1 }] }}
+          />
+          <Ionicons
+            color={colors.turquoise}
+            name="fish"
+            size={10}
+            style={{ opacity: 0.55 }}
+          />
+        </View>
       </View>
 
       <View style={styles.footer}>
@@ -47,18 +72,18 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   markWrap: {
-    width: 132,
-    height: 132,
+    width: 140,
+    height: 140,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 66,
+    borderRadius: 70,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
   },
   mark: {
-    width: 88,
-    height: 72,
+    width: 94,
+    height: 76,
   },
   wordmark: {
     color: colors.ink,
@@ -70,6 +95,12 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.mutedLight,
     letterSpacing: 0.2,
+  },
+  school: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 2,
   },
   footer: {
     position: "absolute",
