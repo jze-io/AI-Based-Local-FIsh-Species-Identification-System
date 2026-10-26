@@ -10,7 +10,7 @@ import LoadingScreen from "./components/LoadingScreen";
 import { colors } from "./constants/theme";
 
 /** Keep the branded screen visible briefly so it does not flash on fast loads. */
-const MIN_BOOT_MS = 900;
+const MIN_BOOT_MS = 2400;
 
 const navigationTheme = {
   ...DefaultTheme,
@@ -72,7 +72,7 @@ export default function App() {
 
     Animated.timing(fade, {
       toValue: 0,
-      duration: 320,
+      duration: 420,
       useNativeDriver: true,
     }).start(({ finished }) => {
       if (finished) {
